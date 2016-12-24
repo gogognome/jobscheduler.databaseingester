@@ -16,7 +16,7 @@ class JobIngestDAO extends AbstractDomainClassDAO<Job>{
     private final Properties properties;
 
     public JobIngestDAO(Properties properties) {
-        super(properties.getTableName(), properties.getConnectionName());
+        super(properties.getTableName(), null, properties.getConnectionName());
         this.properties = properties;
     }
 
@@ -49,6 +49,11 @@ class JobIngestDAO extends AbstractDomainClassDAO<Job>{
 
     @Override
     protected NameValuePairs getNameValuePairs(Job job) throws SQLException {
-        throw new SQLException("Not supported operation");
+        return new NameValuePairs()
+                .add(properties.getIdColumn(), job.getId())
+                .add(properties.getCreationTimestampColumn(), job.getCreationTimestamp())
+                .add(properties.getStartTimestampColumn(), job.getStartTimestamp())
+                .add(properties.getTypeColumn(), job.getType())
+                .add(properties.getDataColumn(), job.getData());
     }
 }

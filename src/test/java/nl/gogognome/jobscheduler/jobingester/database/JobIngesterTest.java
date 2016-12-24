@@ -26,26 +26,28 @@ public class JobIngesterTest {
     }
 
     @Test
-    public void ingestJobs_zeroJobs_addsNoJobs() throws SQLException {
+    public void ingestJobs_zeroJobs_addsNoJobsAndDeletesNoJobsFromDatabase() throws SQLException {
         jobsInDatabase.clear();
 
         jobIngester.ingestJobs();
 
         verify(jobScheduler, never()).addJob(any(Job.class));
+        verify(jobIngestDAO, times(1)).delete(jobsInDatabase);
     }
 
     @Test
-    public void ingestJobs_oneJob_addsOneJob() throws SQLException {
+    public void ingestJobs_oneJob_addsOneJobAndsDeletesJobFromDatabase() throws SQLException {
         Job job1 = new Job("1");
         jobsInDatabase.add(job1);
 
         jobIngester.ingestJobs();
 
         verify(jobScheduler, times(1)).addJob(eq(job1));
+        verify(jobIngestDAO, times(1)).delete(jobsInDatabase);
     }
 
     @Test
-    public void ingestJobs_twoJobs_addsTwoJobs() throws SQLException {
+    public void ingestJobs_twoJobs_addsTwoJobsAndDeletesJobsFromDatabase() throws SQLException {
         Job job1 = new Job("1");
         jobsInDatabase.add(job1);
         Job job2 = new Job("2");
@@ -55,5 +57,6 @@ public class JobIngesterTest {
 
         verify(jobScheduler, times(1)).addJob(eq(job1));
         verify(jobScheduler, times(1)).addJob(eq(job2));
+        verify(jobIngestDAO, times(1)).delete(jobsInDatabase);
     }
 }

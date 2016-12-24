@@ -22,7 +22,7 @@ public class JobIngesterRunner {
             if (threadRunning) {
                 throw new IllegalStateException("The job ingester is still running");
             }
-            threadRunning = false;
+            threadRunning = true;
             thread = new Thread(() -> timerThread());
             thread.start();
         }
