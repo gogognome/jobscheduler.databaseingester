@@ -7,11 +7,15 @@ public class Properties {
 
     private String connectionName = "nl.gogognome.jobscheduler.jobingester";
     private String tableName = "NlGogognomeJobscheduler";
+    private String commandColumn = "command";
     private String idColumn = "id";
     private String creationTimestampColumn = "creationTimestamp";
     private String startTimestampColumn = "startTimestamp";
     private String typeColumn = "type";
     private String dataColumn = "data";
+    private String jobStateColumn = "state";
+    private String requesterIdColumn = "requesterId";
+
     private long delayBetweenPolls = 1000L;
 
     public String getConnectionName() {
@@ -28,6 +32,14 @@ public class Properties {
 
     public void setTableName(String tableName) {
         this.tableName = tableName;
+    }
+
+    public String getCommandColumn() {
+        return commandColumn;
+    }
+
+    public void setCommandColumn(String commandColumn) {
+        this.commandColumn = commandColumn;
     }
 
     public String getIdColumn() {
@@ -68,6 +80,22 @@ public class Properties {
 
     public void setDataColumn(String dataColumn) {
         this.dataColumn = dataColumn;
+    }
+
+    public String getJobStateColumn() {
+        return jobStateColumn;
+    }
+
+    public void setJobStateColumn(String jobStateColumn) {
+        this.jobStateColumn = jobStateColumn;
+    }
+
+    public String getRequesterIdColumn() {
+        return requesterIdColumn;
+    }
+
+    public void setRequesterIdColumn(String requesterIdColumn) {
+        this.requesterIdColumn = requesterIdColumn;
     }
 
     public long getDelayBetweenPolls() {

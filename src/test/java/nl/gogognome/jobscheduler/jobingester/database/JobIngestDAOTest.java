@@ -22,6 +22,7 @@ import java.util.UUID;
 
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singleton;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 import static org.junit.Assert.*;
 
@@ -56,9 +57,9 @@ public class JobIngestDAOTest {
     @Test
     public void findAll_zeroJobsInDatabase_returnsEmptyList() throws SQLException {
         NewTransaction.runs(() -> {
-            List<Job> jobs = jobIngestDAO.findAll();
+            List<JobCommand> jobCommands = jobIngestDAO.findAll();
 
-            assertEquals(emptyList(), jobs);
+            assertEquals(emptyList(), jobCommands);
         });
     }
 
@@ -68,13 +69,15 @@ public class JobIngestDAOTest {
         job1.setCreationTimestamp(Instant.now());
         job1.setType("Test");
         job1.setData("Data");
+        job1.setState(JobState.IDLE);
 
         NewTransaction.runs(() -> {
-            jobIngestDAO.create(job1);
-            List<Job> jobs = jobIngestDAO.findAll();
+            jobIngestDAO.create(new JobCommand(Command.CREATE, job1));
+            List<JobCommand> jobCommands = jobIngestDAO.findAll();
 
-            assertEquals(singleton(job1), jobs);
-            Job retrievedJob1 = jobs.get(0);
+            assertEquals(1, jobCommands.size());
+            assertEquals(Command.CREATE, jobCommands.get(0).getCommand());
+            Job retrievedJob1 = jobCommands.get(0).getJob();
             assertEquals(job1.getId(), retrievedJob1.getId());
             assertEquals(job1.getCreationTimestamp(), retrievedJob1.getCreationTimestamp());
             assertEquals(job1.getStartTimestamp(), retrievedJob1.getStartTimestamp());

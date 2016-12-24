@@ -11,7 +11,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-class JobIngestDAO extends AbstractDomainClassDAO<Job>{
+class JobIngestDAO extends AbstractDomainClassDAO<JobCommand>{
 
     private final Properties properties;
 
@@ -23,7 +23,7 @@ class JobIngestDAO extends AbstractDomainClassDAO<Job>{
     public void delete(List<Job> jobs) {
         if (!jobs.isEmpty()) {
             StringBuilder query = new StringBuilder();
-            query.append("DELETE FROM ").append(tableName).append(" WHERE " + properties.getIdColumn() + " + IN (");
+            query.append("DELETE FROM ").append(tableName).append(" WHERE ").append(properties.getIdColumn()).append(" + IN (");
             for (int i=0; i<jobs.size(); i ++) {
                 if (i != 0) {
                     query.append(',');
@@ -37,23 +37,31 @@ class JobIngestDAO extends AbstractDomainClassDAO<Job>{
     }
 
     @Override
-    protected Job getObjectFromResultSet(ResultSetWrapper result) throws SQLException {
+    protected JobCommand getObjectFromResultSet(ResultSetWrapper result) throws SQLException {
         Job job = new Job(result.getString(properties.getIdColumn()));
         job.setCreationTimestamp(result.getInstant(properties.getCreationTimestampColumn()));
         job.setStartTimestamp(result.getInstant(properties.getStartTimestampColumn()));
         job.setType(result.getString(properties.getTypeColumn()));
         job.setData(result.getString(properties.getDataColumn()));
-        job.setState(JobState.IDLE);
-        return job;
+        job.setState(result.getEnum(JobState.class, properties.getJobStateColumn()));
+        job.setRequesterId(result.getString(properties.getRequesterIdColumn()));
+
+        Command command = result.getEnum(Command.class, properties.getCommandColumn());
+
+        return new JobCommand(command, job);
     }
 
     @Override
-    protected NameValuePairs getNameValuePairs(Job job) throws SQLException {
+    protected NameValuePairs getNameValuePairs(JobCommand jobCommand) throws SQLException {
+        Job job = jobCommand.getJob();
         return new NameValuePairs()
+                .add(properties.getCommandColumn(), jobCommand.getCommand())
                 .add(properties.getIdColumn(), job.getId())
                 .add(properties.getCreationTimestampColumn(), job.getCreationTimestamp())
                 .add(properties.getStartTimestampColumn(), job.getStartTimestamp())
                 .add(properties.getTypeColumn(), job.getType())
-                .add(properties.getDataColumn(), job.getData());
+                .add(properties.getDataColumn(), job.getData())
+                .add(properties.getJobStateColumn(), job.getState())
+                .add(properties.getRequesterIdColumn(), job.getRequesterId());
     }
 }

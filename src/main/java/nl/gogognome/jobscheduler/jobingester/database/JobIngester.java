@@ -20,11 +20,16 @@ public class JobIngester {
 
     public void ingestJobs() {
         NewTransaction.runs(() -> {
-            List<Job> jobs = jobIngestDAO.findAll();
-            jobs.stream().forEach(j -> jobScheduler.addJob(j));
-            jobIngestDAO.delete(jobs);
+            List<JobCommand> jobCommands = jobIngestDAO.findAll();
+            jobCommands.stream().forEach(j -> {
+                switch (j.getCommand()) {
+                    case CREATE: jobScheduler.addJob(j.getJob()); break;
+                    case UPDATE: jobScheduler.updateJob(j.getJob()); break;
+                    case DELETE: jobScheduler.removeJob(j.getJob().getId()); break;
+                }
+            });
+            jobIngestDAO.delete(jobCommands);
         });
     }
-
 
 }
