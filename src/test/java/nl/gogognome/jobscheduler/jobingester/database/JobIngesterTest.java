@@ -14,14 +14,14 @@ import static org.mockito.Mockito.*;
 public class JobIngesterTest {
 
     private JobScheduler jobScheduler = mock(JobScheduler.class);
-    private JobIngestDAO jobIngestDAO = mock(JobIngestDAO.class);
-    private JobIngester jobIngester = new JobIngester(jobScheduler, jobIngestDAO);
+    private JobCommandDAO jobCommandDAO = mock(JobCommandDAO.class);
+    private JobIngester jobIngester = new JobIngester(jobScheduler, jobCommandDAO);
 
     private List<JobCommand> jobCommandsInDatabase = new ArrayList<>();
 
     @Before
     public void initMocks() throws SQLException {
-        when(jobIngestDAO.findAll()).thenReturn(jobCommandsInDatabase);
+        when(jobCommandDAO.findAll()).thenReturn(jobCommandsInDatabase);
     }
 
     @Test
@@ -31,7 +31,7 @@ public class JobIngesterTest {
         jobIngester.ingestJobs();
 
         verify(jobScheduler, never()).addJob(any(Job.class));
-        verify(jobIngestDAO, times(1)).delete(jobCommandsInDatabase);
+        verify(jobCommandDAO).deleteJobCommands(jobCommandsInDatabase);
     }
 
     @Test
@@ -41,24 +41,24 @@ public class JobIngesterTest {
 
         jobIngester.ingestJobs();
 
-        verify(jobScheduler, times(1)).addJob(eq(job1));
-        verify(jobIngestDAO, times(1)).delete(jobCommandsInDatabase);
+        verify(jobScheduler).addJob(eq(job1));
+        verify(jobCommandDAO).deleteJobCommands(jobCommandsInDatabase);
     }
 
     @Test
     public void ingestJobs_threeJobCommandsWithDifferentCommands_eachOfTheCommandsAreHandledAndJobCommandsArDeletedFromDatabase() throws SQLException {
-        Job job1 = new Job("1");
-        jobCommandsInDatabase.add(new JobCommand(Command.CREATE, job1));
-        Job job2 = new Job("2");
-        jobCommandsInDatabase.add(new JobCommand(Command.UPDATE, job2));
-        Job job3 = new Job("3");
-        jobCommandsInDatabase.add(new JobCommand(Command.DELETE, job3));
+        JobCommand jobCommand1 = JobCommandBuilder.buildJob("1", Command.CREATE);
+        jobCommandsInDatabase.add(jobCommand1);
+        JobCommand jobCommand2 = JobCommandBuilder.buildJob("1", Command.UPDATE);
+        jobCommandsInDatabase.add(jobCommand2);
+        JobCommand jobCommand3 = JobCommandBuilder.buildJob("1", Command.DELETE);
+        jobCommandsInDatabase.add(jobCommand3);
 
         jobIngester.ingestJobs();
 
-        verify(jobScheduler, times(1)).addJob(eq(job1));
-        verify(jobScheduler, times(1)).updateJob(eq(job2));
-        verify(jobScheduler, times(1)).removeJob(eq(job3.getId()));
-        verify(jobIngestDAO, times(1)).delete(jobCommandsInDatabase);
+        verify(jobScheduler).addJob(eq(jobCommand1.getJob()));
+        verify(jobScheduler).updateJob(eq(jobCommand2.getJob()));
+        verify(jobScheduler).removeJob(eq(jobCommand3.getJob().getId()));
+        verify(jobCommandDAO).deleteJobCommands(jobCommandsInDatabase);
     }
 }

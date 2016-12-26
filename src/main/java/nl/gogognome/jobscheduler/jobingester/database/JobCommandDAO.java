@@ -11,20 +11,20 @@ import java.sql.SQLException;
 import java.util.List;
 
 @Component
-class JobIngestDAO extends AbstractDomainClassDAO<JobCommand>{
+class JobCommandDAO extends AbstractDomainClassDAO<JobCommand>{
 
     private final Properties properties;
 
-    public JobIngestDAO(Properties properties) {
+    public JobCommandDAO(Properties properties) {
         super(properties.getTableName(), null, properties.getConnectionName());
         this.properties = properties;
     }
 
-    public void delete(List<Job> jobs) {
-        if (!jobs.isEmpty()) {
+    public void deleteJobCommands(List<JobCommand> jobCommands) throws SQLException {
+        if (!jobCommands.isEmpty()) {
             StringBuilder query = new StringBuilder();
-            query.append("DELETE FROM ").append(tableName).append(" WHERE ").append(properties.getIdColumn()).append(" + IN (");
-            for (int i=0; i<jobs.size(); i ++) {
+            query.append("DELETE FROM ").append(tableName).append(" WHERE ").append(properties.getIdColumn()).append(" IN (");
+            for (int i = 0; i< jobCommands.size(); i ++) {
                 if (i != 0) {
                     query.append(',');
                 }
@@ -32,7 +32,10 @@ class JobIngestDAO extends AbstractDomainClassDAO<JobCommand>{
             }
             query.append(')');
 
-            execute(query.toString(), jobs.toArray());
+            int nrDeletedRows = execute(query.toString(), jobCommands.stream().map(j -> j.getJob().getId()).toArray(String[]::new)).getNumberModifiedRows();
+            if (nrDeletedRows != jobCommands.size()) {
+                throw new SQLException("Deleted " + nrDeletedRows + " from the " + jobCommands.size() + " job commands!");
+            }
         }
     }
 

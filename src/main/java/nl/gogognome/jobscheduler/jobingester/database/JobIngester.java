@@ -1,7 +1,6 @@
 package nl.gogognome.jobscheduler.jobingester.database;
 
 import nl.gogognome.dataaccess.transaction.NewTransaction;
-import nl.gogognome.jobscheduler.scheduler.Job;
 import nl.gogognome.jobscheduler.scheduler.JobScheduler;
 import org.springframework.stereotype.Component;
 
@@ -11,16 +10,16 @@ import java.util.List;
 public class JobIngester {
 
     private final JobScheduler jobScheduler;
-    private final JobIngestDAO jobIngestDAO;
+    private final JobCommandDAO jobCommandDAO;
 
-    public JobIngester(JobScheduler jobScheduler, JobIngestDAO jobIngestDAO) {
+    public JobIngester(JobScheduler jobScheduler, JobCommandDAO jobCommandDAO) {
         this.jobScheduler = jobScheduler;
-        this.jobIngestDAO = jobIngestDAO;
+        this.jobCommandDAO = jobCommandDAO;
     }
 
     public void ingestJobs() {
         NewTransaction.runs(() -> {
-            List<JobCommand> jobCommands = jobIngestDAO.findAll();
+            List<JobCommand> jobCommands = jobCommandDAO.findAll();
             jobCommands.stream().forEach(j -> {
                 switch (j.getCommand()) {
                     case CREATE: jobScheduler.addJob(j.getJob()); break;
@@ -28,7 +27,7 @@ public class JobIngester {
                     case DELETE: jobScheduler.removeJob(j.getJob().getId()); break;
                 }
             });
-            jobIngestDAO.delete(jobCommands);
+            jobCommandDAO.deleteJobCommands(jobCommands);
         });
     }
 
