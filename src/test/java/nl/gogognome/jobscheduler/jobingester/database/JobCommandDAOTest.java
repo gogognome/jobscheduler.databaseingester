@@ -2,7 +2,6 @@ package nl.gogognome.jobscheduler.jobingester.database;
 
 import nl.gogognome.dataaccess.dao.QueryBuilder;
 import nl.gogognome.dataaccess.migrations.DatabaseMigratorDAO;
-import nl.gogognome.dataaccess.migrations.Migration;
 import nl.gogognome.dataaccess.transaction.CompositeDatasourceTransaction;
 import nl.gogognome.dataaccess.transaction.NewTransaction;
 import nl.gogognome.dataaccess.transaction.RequireTransaction;
@@ -37,9 +36,7 @@ public class JobCommandDAOTest {
         connectionToKeepInMemoryDatabaseAlive = dataSource.getConnection();
         CompositeDatasourceTransaction.registerDataSource(properties.getConnectionName(), dataSource);
 
-        NewTransaction.runs(() -> {
-            new DatabaseMigratorDAO(properties.getConnectionName()).applyMigrationsFromResource("/database/_migrations.txt");
-        });
+        NewTransaction.runs(() -> new DatabaseMigratorDAO(properties.getConnectionName()).applyMigrationsFromResource("/database/_migrations.txt"));
 
         jobCommandDAO = new JobCommandDAO(properties);
     }
