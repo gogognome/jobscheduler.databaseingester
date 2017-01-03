@@ -8,7 +8,7 @@ import static org.mockito.Mockito.*;
 
 public class JobIngesterRunnerTest {
 
-    private Properties properties = new Properties();
+    private JobIngesterProperties properties = new JobIngesterProperties();
     private JobIngester jobIngester = mock(JobIngester.class);
     private JobIngesterRunner jobIngesterRunner = new JobIngesterRunner(properties, jobIngester);
 

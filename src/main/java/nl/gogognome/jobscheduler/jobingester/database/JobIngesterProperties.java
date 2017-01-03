@@ -3,7 +3,7 @@ package nl.gogognome.jobscheduler.jobingester.database;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties("database")
-public class Properties {
+public class JobIngesterProperties {
 
     private String connectionName = "nl.gogognome.jobscheduler.jobingester";
     private String tableName = "NlGogognomeJobsToIngest";

@@ -24,7 +24,7 @@ import static org.junit.Assert.fail;
 
 public class JobCommandDAOTest {
 
-    private Properties properties = new Properties();
+    private JobIngesterProperties properties = new JobIngesterProperties();
     private Connection connectionToKeepInMemoryDatabaseAlive;
     private JobCommandDAO jobCommandDAO;
 

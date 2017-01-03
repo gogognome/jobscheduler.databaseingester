@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class JobIngesterRunner {
 
-    private final Properties properties;
+    private final JobIngesterProperties properties;
     private final JobIngester jobIngester;
 
     private Thread thread;
     private boolean threadRunning;
-    private Object lock = new Object();
+    private final Object lock = new Object();
 
-    public JobIngesterRunner(Properties properties, JobIngester jobIngester) {
+    public JobIngesterRunner(JobIngesterProperties properties, JobIngester jobIngester) {
         this.properties = properties;
         this.jobIngester = jobIngester;
     }
@@ -23,7 +23,7 @@ public class JobIngesterRunner {
                 throw new IllegalStateException("The job ingester is still running");
             }
             threadRunning = true;
-            thread = new Thread(() -> timerThread());
+            thread = new Thread(this::timerThread);
             thread.start();
         }
     }

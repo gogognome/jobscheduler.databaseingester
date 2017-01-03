@@ -13,9 +13,9 @@ import java.util.List;
 @Component
 class JobCommandDAO extends AbstractDomainClassDAO<JobCommand>{
 
-    private final Properties properties;
+    private final JobIngesterProperties properties;
 
-    public JobCommandDAO(Properties properties) {
+    public JobCommandDAO(JobIngesterProperties properties) {
         super(properties.getTableName(), null, properties.getConnectionName());
         this.properties = properties;
     }
