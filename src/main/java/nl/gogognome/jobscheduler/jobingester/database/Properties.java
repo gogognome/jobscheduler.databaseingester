@@ -6,7 +6,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class Properties {
 
     private String connectionName = "nl.gogognome.jobscheduler.jobingester";
-    private String tableName = "NlGogognomeJobscheduler";
+    private String tableName = "NlGogognomeJobsToIngest";
     private String commandColumn = "command";
     private String idColumn = "id";
     private String creationTimestampColumn = "creationTimestamp";

@@ -1,4 +1,4 @@
-CREATE TABLE NlGogognomeJobscheduler (
+CREATE TABLE NlGogognomeJobsToIngest (
   id VARCHAR(1000),
   command VARCHAR(10) NOT NULL,
   creationTimestamp TIMESTAMP NOT NULL,
