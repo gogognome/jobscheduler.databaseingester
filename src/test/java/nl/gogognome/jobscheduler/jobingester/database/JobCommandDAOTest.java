@@ -38,9 +38,7 @@ public class JobCommandDAOTest {
         CompositeDatasourceTransaction.registerDataSource(properties.getConnectionName(), dataSource);
 
         NewTransaction.runs(() -> {
-            DatabaseMigratorDAO databaseMigratorDAO = new DatabaseMigratorDAO(properties.getConnectionName());
-            List<Migration> migrations = databaseMigratorDAO.loadMigrationsFromResource("/database/_migrations.txt");
-            databaseMigratorDAO.applyMigrations(migrations);
+            new DatabaseMigratorDAO(properties.getConnectionName()).applyMigrationsFromResource("/database/_migrations.txt");
         });
 
         jobCommandDAO = new JobCommandDAO(properties);
