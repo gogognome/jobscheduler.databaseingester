@@ -19,7 +19,7 @@ public class JobIngester {
 
     public void ingestJobs() {
         NewTransaction.runs(() -> {
-            List<JobCommand> jobCommands = jobCommandDAO.findAll();
+            List<JobCommand> jobCommands = jobCommandDAO.findJobCommands();
             jobCommands.stream().forEach(j -> {
                 switch (j.getCommand()) {
                     case CREATE: jobScheduler.addJob(j.getJob()); break;

@@ -17,6 +17,7 @@ public class JobIngesterProperties {
     private String dataColumn = "data";
     private String jobStateColumn = "state";
     private String requesterIdColumn = "requesterId";
+    private String selectJobCommandsQuery = null;
 
     private long delayBetweenPolls = 1000L;
 
@@ -106,5 +107,13 @@ public class JobIngesterProperties {
 
     public void setDelayBetweenPolls(long delayBetweenPolls) {
         this.delayBetweenPolls = delayBetweenPolls;
+    }
+
+    public String getSelectJobCommandsQuery() {
+        return selectJobCommandsQuery;
+    }
+
+    public void setSelectJobCommandsQuery(String selectJobCommandsQuery) {
+        this.selectJobCommandsQuery = selectJobCommandsQuery;
     }
 }

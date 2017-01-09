@@ -20,6 +20,13 @@ class JobCommandDAO extends AbstractDomainClassDAO<JobCommand>{
         this.properties = properties;
     }
 
+    public List<JobCommand> findJobCommands() throws SQLException {
+        if (properties.getSelectJobCommandsQuery() == null) {
+            return findAll();
+        }
+        return execute(properties.getSelectJobCommandsQuery()).toList(r -> getObjectFromResultSet(r));
+    }
+
     public void deleteJobCommands(List<JobCommand> jobCommands) throws SQLException {
         if (!jobCommands.isEmpty()) {
             StringBuilder query = new StringBuilder();

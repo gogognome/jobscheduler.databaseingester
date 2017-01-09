@@ -21,7 +21,7 @@ public class JobIngesterTest {
 
     @Before
     public void initMocks() throws SQLException {
-        when(jobCommandDAO.findAll()).thenReturn(jobCommandsInDatabase);
+        when(jobCommandDAO.findJobCommands()).thenReturn(jobCommandsInDatabase);
     }
 
     @Test

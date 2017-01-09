@@ -49,7 +49,7 @@ public class JobCommandDAOTest {
     @Test
     public void findAll_zeroJobsInDatabase_returnsEmptyList() throws SQLException {
         NewTransaction.runs(() -> {
-            List<JobCommand> jobCommands = jobCommandDAO.findAll();
+            List<JobCommand> jobCommands = jobCommandDAO.findJobCommands();
 
             assertEquals(emptyList(), jobCommands);
         });
@@ -61,7 +61,7 @@ public class JobCommandDAOTest {
 
         NewTransaction.runs(() -> {
             jobCommandDAO.create(jobCommand);
-            List<JobCommand> jobCommands = jobCommandDAO.findAll();
+            List<JobCommand> jobCommands = jobCommandDAO.findJobCommands();
 
             assertEquals(1, jobCommands.size());
             assertEquals(jobCommand.getCommand(), jobCommands.get(0).getCommand());
@@ -73,6 +73,23 @@ public class JobCommandDAOTest {
             assertEquals(job.getType(), retrievedJob1.getType());
             assertEquals(job.getData(), retrievedJob1.getData());
             assertEquals(job.getState(), retrievedJob1.getState());
+        });
+    }
+
+    @Test
+    public void findAll_twoJobCommandsPresentAndselectJobCommandsQueryOnlyGetsFirstCommand_getsFirstRow() throws SQLException {
+        properties.setSelectJobCommandsQuery("SELECT * FROM " + properties.getTableName() + " LIMIT 1");
+        NewTransaction.runs(() -> {
+            JobCommand jobCommand1 = JobCommandBuilder.buildJob("1", Command.CREATE);
+            jobCommandDAO.create(jobCommand1);
+            JobCommand jobCommand2 = JobCommandBuilder.buildJob("2", Command.UPDATE);
+            jobCommandDAO.create(jobCommand2);
+
+            List<JobCommand> jobCommands = jobCommandDAO.findJobCommands();
+
+            assertEquals(1, jobCommands.size());
+            assertEquals(jobCommand1.getCommand(), jobCommands.get(0).getCommand());
+            assertEquals(jobCommand1.getJob(), jobCommands.get(0).getJob());
         });
     }
 
