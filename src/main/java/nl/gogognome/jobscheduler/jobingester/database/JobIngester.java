@@ -5,6 +5,7 @@ import nl.gogognome.jobscheduler.scheduler.JobScheduler;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Component
 public class JobIngester {
@@ -17,7 +18,12 @@ public class JobIngester {
         this.jobCommandDAO = jobCommandDAO;
     }
 
-    public void ingestJobs() {
+    /**
+     * Reads job commands from the database and forwards them to the job scheduler.
+     * @return the number of job commands handled
+     */
+    public int ingestJobs() {
+        AtomicInteger nrJobCommandsHandled = new AtomicInteger();
         jobScheduler.runBatch(() -> {
             NewTransaction.runs(() -> {
                 List<JobCommand> jobCommands = jobCommandDAO.findJobCommands();
@@ -29,8 +35,10 @@ public class JobIngester {
                     }
                 });
                 jobCommandDAO.deleteJobCommands(jobCommands);
+                nrJobCommandsHandled.set(jobCommands.size());
             });
         });
+        return nrJobCommandsHandled.intValue();
     }
 
 }

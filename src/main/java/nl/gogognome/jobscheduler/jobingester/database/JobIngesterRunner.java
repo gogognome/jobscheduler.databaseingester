@@ -45,20 +45,26 @@ public class JobIngesterRunner {
     }
 
     private void timerThread() {
+        long delayInMilliseconds = 1;
         while (true) {
             synchronized (lock) {
                 if (!threadRunning) {
                     return;
                 }
             }
-            jobIngester.ingestJobs();
+            int nrCommandsHandled = jobIngester.ingestJobs();
 
-            synchronized (lock) {
-                try {
-                    lock.wait(properties.getDelayBetweenPolls());
-                } catch (InterruptedException e) {
-                    // ignore this exception
-                }
+            delayInMilliseconds = nrCommandsHandled > 0 ? 1 : Math.min(2 * delayInMilliseconds, properties.getDelayBetweenPolls());
+            delayThread(delayInMilliseconds);
+        }
+    }
+
+    protected void delayThread(long delayInMilliseconds) {
+        synchronized (lock) {
+            try {
+                lock.wait(delayInMilliseconds);
+            } catch (InterruptedException e) {
+                // ignore this exception
             }
         }
     }
