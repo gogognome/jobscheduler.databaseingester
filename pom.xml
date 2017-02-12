@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>Database ingester</name>
-    <description>A job ingester that reads jobs from a database and adds them to the job scheduler.</description>
+    <description>a job ingester that reads jobs from a database and adds them to the job scheduler</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
