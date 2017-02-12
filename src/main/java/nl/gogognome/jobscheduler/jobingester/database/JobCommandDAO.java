@@ -24,7 +24,7 @@ class JobCommandDAO extends AbstractDomainClassDAO<JobCommand>{
         if (properties.getSelectJobCommandsQuery() == null) {
             return findAll();
         }
-        return execute(properties.getSelectJobCommandsQuery()).toList(r -> getObjectFromResultSet(r));
+        return execute(properties.getSelectJobCommandsQuery()).toList(this::getObjectFromResultSet);
     }
 
     public void deleteJobCommands(List<JobCommand> jobCommands) throws SQLException {
@@ -39,7 +39,7 @@ class JobCommandDAO extends AbstractDomainClassDAO<JobCommand>{
             }
             query.append(')');
 
-            int nrDeletedRows = execute(query.toString(), jobCommands.stream().map(j -> j.getJob().getId()).toArray(String[]::new)).getNumberModifiedRows();
+            int nrDeletedRows = execute(query.toString(), jobCommands.stream().map(j -> j.getJob().getId()).toArray(Object[]::new)).getNumberModifiedRows();
             if (nrDeletedRows != jobCommands.size()) {
                 throw new SQLException("Deleted " + nrDeletedRows + " from the " + jobCommands.size() + " job commands!");
             }
@@ -49,8 +49,8 @@ class JobCommandDAO extends AbstractDomainClassDAO<JobCommand>{
     @Override
     protected JobCommand getObjectFromResultSet(ResultSetWrapper result) throws SQLException {
         Job job = new Job(result.getString(properties.getIdColumn()));
-        job.setCreationTimestamp(result.getInstant(properties.getCreationTimestampColumn()));
-        job.setStartTimestamp(result.getInstant(properties.getStartTimestampColumn()));
+        job.setCreationInstant(result.getInstant(properties.getCreationTimestampColumn()));
+        job.setSchedueledAtInstant(result.getInstant(properties.getStartTimestampColumn()));
         job.setType(result.getString(properties.getTypeColumn()));
         job.setData(result.getString(properties.getDataColumn()));
         job.setState(result.getEnum(JobState.class, properties.getJobStateColumn()));
@@ -67,8 +67,8 @@ class JobCommandDAO extends AbstractDomainClassDAO<JobCommand>{
         return new NameValuePairs()
                 .add(properties.getCommandColumn(), jobCommand.getCommand())
                 .add(properties.getIdColumn(), job.getId())
-                .add(properties.getCreationTimestampColumn(), job.getCreationTimestamp())
-                .add(properties.getStartTimestampColumn(), job.getStartTimestamp())
+                .add(properties.getCreationTimestampColumn(), job.getCreationInstant())
+                .add(properties.getStartTimestampColumn(), job.getSchedueledAtInstant())
                 .add(properties.getTypeColumn(), job.getType())
                 .add(properties.getDataColumn(), job.getData())
                 .add(properties.getJobStateColumn(), job.getState())

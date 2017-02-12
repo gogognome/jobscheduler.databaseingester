@@ -25,6 +25,7 @@ import static org.junit.Assert.fail;
 public class JobCommandDAOTest {
 
     private JobIngesterProperties properties = new JobIngesterProperties();
+    @SuppressWarnings("unused")
     private Connection connectionToKeepInMemoryDatabaseAlive;
     private JobCommandDAO jobCommandDAO;
 
@@ -68,8 +69,8 @@ public class JobCommandDAOTest {
             Job job = jobCommand.getJob();
             Job retrievedJob1 = jobCommands.get(0).getJob();
             assertEquals(job.getId(), retrievedJob1.getId());
-            assertEquals(job.getCreationTimestamp(), retrievedJob1.getCreationTimestamp());
-            assertEquals(job.getStartTimestamp(), retrievedJob1.getStartTimestamp());
+            assertEquals(job.getCreationInstant(), retrievedJob1.getCreationInstant());
+            assertEquals(job.getSchedueledAtInstant(), retrievedJob1.getSchedueledAtInstant());
             assertEquals(job.getType(), retrievedJob1.getType());
             assertEquals(job.getData(), retrievedJob1.getData());
             assertEquals(job.getState(), retrievedJob1.getState());
@@ -77,7 +78,7 @@ public class JobCommandDAOTest {
     }
 
     @Test
-    public void findAll_twoJobCommandsPresentAndselectJobCommandsQueryOnlyGetsFirstCommand_getsFirstRow() throws SQLException {
+    public void findAll_twoJobCommandsPresentAndSelectJobCommandsQueryOnlyGetsFirstCommand_getsFirstRow() throws SQLException {
         properties.setSelectJobCommandsQuery("SELECT * FROM " + properties.getTableName() + " LIMIT 1");
         NewTransaction.runs(() -> {
             JobCommand jobCommand1 = JobCommandBuilder.buildJob("1", Command.CREATE);

@@ -9,7 +9,7 @@ public class JobCommandBuilder {
 
     public static JobCommand buildJob(String id, Command command) {
         Job job = new Job(id);
-        job.setCreationTimestamp(Instant.now());
+        job.setCreationInstant(Instant.now());
         job.setType("Test");
         job.setData("Data");
         job.setState(JobState.IDLE);
