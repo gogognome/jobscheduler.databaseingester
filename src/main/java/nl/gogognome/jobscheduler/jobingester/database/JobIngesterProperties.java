@@ -11,8 +11,8 @@ public class JobIngesterProperties {
     private String tableName = "NlGogognomeJobsToIngest";
     private String commandColumn = "command";
     private String idColumn = "id";
-    private String creationTimestampColumn = "creationTimestamp";
-    private String startTimestampColumn = "startTimestamp";
+    private String creationInstantColumn = "creationInstant";
+    private String scheduledAtInstantColumn = "scheduledAtInstant";
     private String typeColumn = "type";
     private String dataColumn = "data";
     private String jobStateColumn = "state";
@@ -53,20 +53,20 @@ public class JobIngesterProperties {
         this.idColumn = idColumn;
     }
 
-    public String getCreationTimestampColumn() {
-        return creationTimestampColumn;
+    public String getCreationInstantColumn() {
+        return creationInstantColumn;
     }
 
-    public void setCreationTimestampColumn(String creationTimestampColumn) {
-        this.creationTimestampColumn = creationTimestampColumn;
+    public void setCreationInstantColumn(String creationInstantColumn) {
+        this.creationInstantColumn = creationInstantColumn;
     }
 
-    public String getStartTimestampColumn() {
-        return startTimestampColumn;
+    public String getScheduledAtInstantColumn() {
+        return scheduledAtInstantColumn;
     }
 
-    public void setStartTimestampColumn(String startTimestampColumn) {
-        this.startTimestampColumn = startTimestampColumn;
+    public void setScheduledAtInstantColumn(String scheduledAtInstantColumn) {
+        this.scheduledAtInstantColumn = scheduledAtInstantColumn;
     }
 
     public String getTypeColumn() {
