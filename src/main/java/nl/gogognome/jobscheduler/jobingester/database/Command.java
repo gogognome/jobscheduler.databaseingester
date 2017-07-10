@@ -1,7 +1,8 @@
 package nl.gogognome.jobscheduler.jobingester.database;
 
 public enum Command {
-    CREATE,
-    UPDATE,
-    DELETE
+    SCHEDULE,
+    RESCHEDULE,
+    JOB_FINISHED,
+    JOB_FAILED
 }

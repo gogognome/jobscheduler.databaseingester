@@ -4,7 +4,6 @@ import nl.gogognome.dataaccess.dao.AbstractDomainClassDAO;
 import nl.gogognome.dataaccess.dao.NameValuePairs;
 import nl.gogognome.dataaccess.dao.ResultSetWrapper;
 import nl.gogognome.jobscheduler.scheduler.Job;
-import nl.gogognome.jobscheduler.scheduler.JobState;
 import org.springframework.stereotype.Component;
 
 import java.sql.SQLException;
@@ -49,12 +48,9 @@ class JobCommandDAO extends AbstractDomainClassDAO<JobCommand>{
     @Override
     protected JobCommand getObjectFromResultSet(ResultSetWrapper result) throws SQLException {
         Job job = new Job(result.getString(properties.getIdColumn()));
-        job.setCreationInstant(result.getInstant(properties.getCreationInstantColumn()));
-        job.setSchedueledAtInstant(result.getInstant(properties.getScheduledAtInstantColumn()));
+        job.setScheduledAtInstant(result.getInstant(properties.getScheduledAtInstantColumn()));
         job.setType(result.getString(properties.getTypeColumn()));
-        job.setData(result.getString(properties.getDataColumn()));
-        job.setState(result.getEnum(JobState.class, properties.getJobStateColumn()));
-        job.setRequesterId(result.getString(properties.getRequesterIdColumn()));
+        job.setData(result.getBytes(properties.getDataColumn()));
 
         Command command = result.getEnum(Command.class, properties.getCommandColumn());
 
@@ -67,11 +63,8 @@ class JobCommandDAO extends AbstractDomainClassDAO<JobCommand>{
         return new NameValuePairs()
                 .add(properties.getCommandColumn(), jobCommand.getCommand())
                 .add(properties.getIdColumn(), job.getId())
-                .add(properties.getCreationInstantColumn(), job.getCreationInstant())
-                .add(properties.getScheduledAtInstantColumn(), job.getSchedueledAtInstant())
+                .add(properties.getScheduledAtInstantColumn(), job.getScheduledAtInstant())
                 .add(properties.getTypeColumn(), job.getType())
-                .add(properties.getDataColumn(), job.getData())
-                .add(properties.getJobStateColumn(), job.getState())
-                .add(properties.getRequesterIdColumn(), job.getRequesterId());
+                .add(properties.getDataColumn(), job.getData());
     }
 }

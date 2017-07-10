@@ -19,6 +19,7 @@ import java.util.UUID;
 import static java.util.Arrays.asList;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
@@ -58,7 +59,7 @@ public class JobCommandDAOTest {
 
     @Test
     public void findAll_oneJobsInDatabase_returnsOneJob() throws SQLException {
-        JobCommand jobCommand = JobCommandBuilder.buildJob("1", Command.CREATE);
+        JobCommand jobCommand = JobCommandBuilder.buildJob("1", Command.SCHEDULE);
 
         NewTransaction.runs(() -> {
             jobCommandDAO.create(jobCommand);
@@ -69,11 +70,8 @@ public class JobCommandDAOTest {
             Job job = jobCommand.getJob();
             Job retrievedJob1 = jobCommands.get(0).getJob();
             assertEquals(job.getId(), retrievedJob1.getId());
-            assertEquals(job.getCreationInstant(), retrievedJob1.getCreationInstant());
-            assertEquals(job.getSchedueledAtInstant(), retrievedJob1.getSchedueledAtInstant());
             assertEquals(job.getType(), retrievedJob1.getType());
-            assertEquals(job.getData(), retrievedJob1.getData());
-            assertEquals(job.getState(), retrievedJob1.getState());
+            assertArrayEquals(job.getData(), retrievedJob1.getData());
         });
     }
 
@@ -81,9 +79,9 @@ public class JobCommandDAOTest {
     public void findAll_twoJobCommandsPresentAndSelectJobCommandsQueryOnlyGetsFirstCommand_getsFirstRow() throws SQLException {
         properties.setSelectJobCommandsQuery("SELECT * FROM " + properties.getTableName() + " LIMIT 1");
         NewTransaction.runs(() -> {
-            JobCommand jobCommand1 = JobCommandBuilder.buildJob("1", Command.CREATE);
+            JobCommand jobCommand1 = JobCommandBuilder.buildJob("1", Command.SCHEDULE);
             jobCommandDAO.create(jobCommand1);
-            JobCommand jobCommand2 = JobCommandBuilder.buildJob("2", Command.UPDATE);
+            JobCommand jobCommand2 = JobCommandBuilder.buildJob("2", Command.RESCHEDULE);
             jobCommandDAO.create(jobCommand2);
 
             List<JobCommand> jobCommands = jobCommandDAO.findJobCommands();
@@ -111,7 +109,7 @@ public class JobCommandDAOTest {
     @Test
     public void delete_oneJobCommandToDelete_deletesJobCommand() throws SQLException {
         NewTransaction.runs(() -> {
-            JobCommand jobCommand = JobCommandBuilder.buildJob("1", Command.CREATE);
+            JobCommand jobCommand = JobCommandBuilder.buildJob("1", Command.SCHEDULE);
             jobCommandDAO.create(jobCommand);
 
             jobCommandDAO.deleteJobCommands(singletonList(jobCommand));
@@ -124,9 +122,9 @@ public class JobCommandDAOTest {
     @Test
     public void delete_twoJobCommandsToDelete_deletesJobCommands() throws SQLException {
         NewTransaction.runs(() -> {
-            JobCommand jobCommand1 = JobCommandBuilder.buildJob("1", Command.CREATE);
+            JobCommand jobCommand1 = JobCommandBuilder.buildJob("1", Command.SCHEDULE);
             jobCommandDAO.create(jobCommand1);
-            JobCommand jobCommand2 = JobCommandBuilder.buildJob("2", Command.UPDATE);
+            JobCommand jobCommand2 = JobCommandBuilder.buildJob("2", Command.RESCHEDULE);
             jobCommandDAO.create(jobCommand2);
 
             jobCommandDAO.deleteJobCommands(asList(jobCommand1, jobCommand2));
@@ -138,13 +136,23 @@ public class JobCommandDAOTest {
     @Test
     public void delete_nonExistingJobCommand_shouldFail() {
         NewTransaction.runs(() -> {
-            JobCommand jobCommand = JobCommandBuilder.buildJob("1", Command.CREATE);
+            JobCommand jobCommand = JobCommandBuilder.buildJob("1", Command.SCHEDULE);
 
             try {
                 jobCommandDAO.deleteJobCommands(singletonList(jobCommand));
                 fail("Expected exception not thrown");
             } catch (SQLException e) {
                 assertEquals("Deleted 0 from the 1 job commands!", e.getMessage());
+            }
+        });
+    }
+
+    @Test
+    public void allCommandsShouldFitInCommandColumn() throws SQLException {
+        NewTransaction.runs(() -> {
+            int nextId = 1;
+            for (Command command : Command.values()) {
+                jobCommandDAO.create(JobCommandBuilder.buildJob(Integer.toString(nextId++), command));
             }
         });
     }

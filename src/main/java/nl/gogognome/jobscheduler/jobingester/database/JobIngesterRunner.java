@@ -52,7 +52,13 @@ public class JobIngesterRunner {
                     return;
                 }
             }
-            int nrCommandsHandled = jobIngester.ingestJobs();
+
+            int nrCommandsHandled;
+            try {
+                nrCommandsHandled = jobIngester.ingestJobs();
+            } catch (Exception e) {
+                nrCommandsHandled = 0;
+            }
 
             delayInMilliseconds = nrCommandsHandled > 0 ? 1 : Math.min(2 * delayInMilliseconds, properties.getDelayBetweenPolls());
             delayThread(delayInMilliseconds);

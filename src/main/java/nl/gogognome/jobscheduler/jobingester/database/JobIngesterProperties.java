@@ -11,12 +11,9 @@ public class JobIngesterProperties {
     private String tableName = "NlGogognomeJobsToIngest";
     private String commandColumn = "command";
     private String idColumn = "id";
-    private String creationInstantColumn = "creationInstant";
     private String scheduledAtInstantColumn = "scheduledAtInstant";
     private String typeColumn = "type";
     private String dataColumn = "data";
-    private String jobStateColumn = "state";
-    private String requesterIdColumn = "requesterId";
     private String selectJobCommandsQuery = null;
 
     private long delayBetweenPolls = 1000L;
@@ -53,14 +50,6 @@ public class JobIngesterProperties {
         this.idColumn = idColumn;
     }
 
-    public String getCreationInstantColumn() {
-        return creationInstantColumn;
-    }
-
-    public void setCreationInstantColumn(String creationInstantColumn) {
-        this.creationInstantColumn = creationInstantColumn;
-    }
-
     public String getScheduledAtInstantColumn() {
         return scheduledAtInstantColumn;
     }
@@ -83,22 +72,6 @@ public class JobIngesterProperties {
 
     public void setDataColumn(String dataColumn) {
         this.dataColumn = dataColumn;
-    }
-
-    public String getJobStateColumn() {
-        return jobStateColumn;
-    }
-
-    public void setJobStateColumn(String jobStateColumn) {
-        this.jobStateColumn = jobStateColumn;
-    }
-
-    public String getRequesterIdColumn() {
-        return requesterIdColumn;
-    }
-
-    public void setRequesterIdColumn(String requesterIdColumn) {
-        this.requesterIdColumn = requesterIdColumn;
     }
 
     public long getDelayBetweenPolls() {
