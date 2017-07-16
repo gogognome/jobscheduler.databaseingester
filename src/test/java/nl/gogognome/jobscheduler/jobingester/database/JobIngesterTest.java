@@ -24,8 +24,6 @@ public class JobIngesterTest {
     @Before
     public void initMocks() throws SQLException {
         when(jobCommandDAO.findJobCommands()).thenReturn(jobCommandsInDatabase);
-        doAnswer(invocationOnMock -> { ((Runnable)invocationOnMock.getArguments()[0]).run(); return null; })
-                .when(jobScheduler).runBatch(any(Runnable.class));
     }
 
     @Test
