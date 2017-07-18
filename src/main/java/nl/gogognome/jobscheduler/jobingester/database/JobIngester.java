@@ -23,27 +23,29 @@ public class JobIngester {
      */
     public int ingestJobs() {
         try {
-            return NewTransaction.returns(() -> {
-                List<JobCommand> jobCommands = jobCommandDAO.findJobCommands();
-                jobCommands.stream().forEach(j -> {
-                    switch (j.getCommand()) {
-                        case SCHEDULE:
-                            jobScheduler.schedule(j.getJob());
-                            break;
-                        case RESCHEDULE:
-                            jobScheduler.reschedule(j.getJob());
-                            break;
-                        case JOB_FINISHED:
-                            jobScheduler.jobFinished(j.getJob().getId());
-                            break;
-                        case JOB_FAILED:
-                            jobScheduler.jobFailed(j.getJob().getId());
-                            break;
-                    }
+            List<JobCommand> jobCommands = NewTransaction.returns(jobCommandDAO::findJobCommands);
+            jobScheduler.runBatch(() -> {
+                NewTransaction.runs(() -> {
+                    jobCommands.stream().forEach(j -> {
+                        switch (j.getCommand()) {
+                            case SCHEDULE:
+                                jobScheduler.schedule(j.getJob());
+                                break;
+                            case RESCHEDULE:
+                                jobScheduler.reschedule(j.getJob());
+                                break;
+                            case JOB_FINISHED:
+                                jobScheduler.jobFinished(j.getJob().getId());
+                                break;
+                            case JOB_FAILED:
+                                jobScheduler.jobFailed(j.getJob().getId());
+                                break;
+                        }
+                    });
+                    jobCommandDAO.deleteJobCommands(jobCommands);
                 });
-                jobCommandDAO.deleteJobCommands(jobCommands);
-                return jobCommands.size();
             });
+            return jobCommands.size();
         } catch (Exception e) {
             jobScheduler.loadPersistedJobs(); // transaction is rolled back, thus refresh the jobs in the scheduler from the persisted jobs
             throw e;
