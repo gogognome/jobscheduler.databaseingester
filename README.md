@@ -7,7 +7,7 @@ the commands to the job scheduler
 This library allows your application (which could be a microservice or a big monolith enterprise application) 
 to schedule jobs and notify that
 jobs have finished using a [`JobScheduler`](https://github.com/gogognome/jobscheduler) by writing
-job commands in a database table. This library creates worker thread that polls
+job commands in a database table. This library creates a worker thread that polls
 for job commands in the database table and forwards them to the job scheduler and then
 removes the job commands from the database.
 
@@ -61,3 +61,6 @@ poll for job commands in a database table and forward all commands to the `JobSc
 And when you want to stop the `JobIngesterRunner` simply do
 
     jobIngesterRunner.stop();
+
+For an example of how to use this application, you can check out the
+[Http Job Scheduler Server](https://github.com/gogognome/httpjobschedulerserver) project on Github.
